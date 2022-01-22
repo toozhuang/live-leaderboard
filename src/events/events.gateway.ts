@@ -3,12 +3,11 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
-import { from, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Server } from 'socket.io';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -19,10 +18,8 @@ export class EventsGateway {
   server: Server;
 
   @SubscribeMessage('scores')
-  findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
-    return from([10, 222,3333,444, 3]).pipe(
-      map((item) => ({ event: 'scores', data: item })),
-    );
+  bump(@MessageBody() data: any): any {
+    this.server.emit('scores', data);
   }
 
   @SubscribeMessage('identity')
